@@ -1,4 +1,5 @@
-# --- Example file ---
-#this  is a comment
+url = www.baidu.com
 proxy = 10.99.60.90:8080
 retry = 3
+output = a.txt
+connect-timeout = 10
