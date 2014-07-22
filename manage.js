@@ -1,10 +1,11 @@
 var fs = require('fs');
-var path = require('path');
 var parser = require('./parser');
 var taskUtil = require('./taskUtil');
 var exec = require('child_process').exec;
 
-var threads = 3;
+var arg = parseInt(process.argv[2]);
+
+var threads = arg || 3;
 var index = 0;
 
 function runTasks(tasks){
@@ -19,17 +20,15 @@ function runTasks(tasks){
         var cmd = 'curl --fail --create-dirs -K ' + task.workingCurlPath;
         console.log(cmd);
         var child = exec(cmd, function callback(error, stdout, stderr) {
-//        console.log(error);
-//        console.log(stdout);
-//        console.log(stderr);
-            var success = function(parsedText){
-                fs.writeFileSync(task.parsedPath, parsedText);
-                fs.renameSync(task.workingCurlPath, task.successCurlPath);
-            };
-            var fail = function(parsedText){
+            var html = fs.readFileSync(task.htmlPath, 'utf-8');
+            var parsed = parser.parse(html);
+            if(parsed === -1){
                 fs.renameSync(task.workingCurlPath, task.errorCurlPath);
-            };
-            parser.parseFile(task.htmlPath, success, fail);
+            }
+            else{
+                fs.writeFileSync(task.parsedPath, parsed);
+                fs.renameSync(task.workingCurlPath, task.successCurlPath);
+            }
 
             // delete child process
             for(var i = 0; i < children.length; i++){
@@ -58,14 +57,12 @@ function runTasks(tasks){
     };
 
     while(index < threads && index < tasks.length){
-        console.log('----------------', tasks[index]);
         execTask(tasks[index]);
     }
 }
 
 function main(){
     var allTasks = taskUtil.loadAllTasks();
-//    console.log(allTasks);
     if(allTasks.length === 0){
         console.log('No curl config file found');
         return 0;
@@ -75,5 +72,4 @@ function main(){
 }
 
 main();
-
 
