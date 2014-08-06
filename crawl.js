@@ -4,8 +4,7 @@ var taskUtil = require('./taskUtil');
 var exec = require('child_process').exec;
 
 var arg = parseInt(process.argv[2]);
-
-var threads = arg || 3;
+var maxConn = arg || 3; // 3 connections by default
 var index = 0;
 
 function runTasks(tasks){
@@ -18,7 +17,6 @@ function runTasks(tasks){
         }
 
         var cmd = 'curl --fail --create-dirs -K ' + task.workingCurlPath;
-        console.log(cmd);
         var child = exec(cmd, function callback(error, stdout, stderr) {
             var html = fs.readFileSync(task.htmlPath, 'utf-8');
             var parsed = parser.parse(html);
@@ -33,16 +31,15 @@ function runTasks(tasks){
             // delete child process
             for(var i = 0; i < children.length; i++){
                 if(children[i] === child){
-                    console.log('found');
                     children.splice(i, 1);
                     break;
                 }
             }
 
             // exec new child process or exit
-            if(children.length < threads){
+            if(children.length < maxConn){
                 if(index === tasks.length){
-                    console.log('exit');
+                    console.log('normal exit');
                     return 0;
                 }
                 console.log('exec ' + index);
@@ -52,11 +49,10 @@ function runTasks(tasks){
 
         index++;
         children.push(child);
-        console.log('children: ' + children.length);
-        console.log('index: ' + index);
+        console.log('index: ' + index + ', children count: ' + children.length);
     };
 
-    while(index < threads && index < tasks.length){
+    while(index < maxConn && index < tasks.length){
         execTask(tasks[index]);
     }
 }
@@ -67,9 +63,7 @@ function main(){
         console.log('No curl config file found');
         return 0;
     }
-
     runTasks(allTasks);
 }
 
 main();
-

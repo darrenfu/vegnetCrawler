@@ -14,7 +14,6 @@ function Task(id, curlFilePath){
     this.parsedPath = path.join('parsed', id + '.txt');
 }
 
-
 function loadTasksFromDir(dir){
     var tasks = [];
     var entries = fs.readdirSync(dir);

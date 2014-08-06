@@ -34,4 +34,3 @@ for (var i = start; i <= end; i++) {
 
     fs.writeFileSync(path.join(dir, fileName), text);
 }
-
