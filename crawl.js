@@ -11,21 +11,28 @@ function runTasks(tasks){
     var children = [];
 
     var execTask = function(task){
-        console.log(task);
+//        console.log(task);
         if(task.curlFilePath !== task.workingCurlPath){
             fs.renameSync(task.curlFilePath, task.workingCurlPath);
         }
 
         var cmd = 'curl --fail --create-dirs -K ' + task.workingCurlPath;
         var child = exec(cmd, function callback(error, stdout, stderr) {
-            var html = fs.readFileSync(task.htmlPath, 'utf-8');
-            var parsed = parser.parse(html);
-            if(parsed === -1){
-                fs.renameSync(task.workingCurlPath, task.errorCurlPath);
+            if(!fs.existsSync(task.htmlPath)){
+                fs.renameSync(task.workingCurlPath, task.errorCurlPath); // download error
+                console.error('download error: ', task.id);
             }
             else{
-                fs.writeFileSync(task.parsedPath, parsed);
-                fs.renameSync(task.workingCurlPath, task.successCurlPath);
+                var html = fs.readFileSync(task.htmlPath, 'utf-8');
+                var parsed = parser.parse(html);
+                if(parsed === -1){
+                    fs.renameSync(task.workingCurlPath, task.errorCurlPath); // parse error
+                    console.error('parse error: ', task.id);
+                }
+                else{
+                    fs.writeFileSync(task.parsedPath, parsed);
+                    fs.renameSync(task.workingCurlPath, task.successCurlPath);
+                }
             }
 
             // delete child process
@@ -42,14 +49,12 @@ function runTasks(tasks){
                     console.log('normal exit');
                     return 0;
                 }
-                console.log('exec ' + index);
                 execTask(tasks[index]);
             }
         });
 
         index++;
         children.push(child);
-        console.log('index: ' + index + ', children count: ' + children.length);
     };
 
     while(index < maxConn && index < tasks.length){

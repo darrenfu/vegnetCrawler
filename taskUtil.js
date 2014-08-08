@@ -34,9 +34,9 @@ function loadTasksFromDir(dir){
 function loadAllTasks(){
     var allTasks = [];
 
-    allTasks = allTasks.concat(loadTasksFromDir('origin'));
     allTasks = allTasks.concat(loadTasksFromDir('working'));
     allTasks = allTasks.concat(loadTasksFromDir('error'));
+    allTasks = allTasks.concat(loadTasksFromDir('origin'));
 
     return allTasks;
 }
