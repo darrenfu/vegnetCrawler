@@ -24,9 +24,9 @@ for (var i = start; i <= end; i++) {
     var config = [
         'url = ' + url,
         'output = ' + output,
-        'proxy = 10.99.60.90:8080',
+//        'proxy = 10.99.60.90:8080',
         'retry = 0',
-        '--max-time = 40'
+        '--max-time = 30'
     ];
 
     var text = config.join('\n');
