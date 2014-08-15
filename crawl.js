@@ -7,6 +7,22 @@ var arg = parseInt(process.argv[2]);
 var maxConn = arg || 3; // 3 connections by default
 var index = 0;
 
+if(!fs.existsSync('working')){
+    fs.mkdirSync('working');
+}
+if(!fs.existsSync('error')){
+    fs.mkdirSync('error');
+}
+if(!fs.existsSync('success')){
+    fs.mkdirSync('success');
+}
+if(!fs.existsSync('parsed')){
+    fs.mkdirSync('parsed');
+}
+if(!fs.existsSync('html')){
+    fs.mkdirSync('html');
+}
+
 function runTasks(tasks){
     var children = [];
 
