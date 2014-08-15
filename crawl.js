@@ -32,6 +32,7 @@ function runTasks(tasks){
                 else{
                     fs.writeFileSync(task.parsedPath, parsed);
                     fs.renameSync(task.workingCurlPath, task.successCurlPath);
+                    console.log('success: ', task.id);
                 }
             }
 
