@@ -25,10 +25,11 @@ for (var i = start; i <= end; i++) {
         'url = ' + url,
         'output = ' + output,
 //        'proxy = 10.99.60.90:8080',
-        'retry = 0',
-        'max-time = 40', // total time > 40 seconds, abort
-        'speed-time = 20',
-        'speed-limit = 500' // download speed slower than 500B/s for 20 seconds, abort
+        'max-time = 180', // total time > 180 seconds, abort
+        'limit-rate = 5000', // limit download rate < 5K/s
+//        'speed-time = 20',
+//        'speed-limit = 500' // download speed slower than 500B/s for 20 seconds, abort
+        'retry = 5'
     ];
 
     var text = config.join('\n');
